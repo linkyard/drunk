@@ -10,7 +10,7 @@ name := projectName
 
 organization := "com.github.jarlakxen"
 
-crossScalaVersions := Seq("2.12.7", "2.11.12")
+crossScalaVersions := Seq("2.13.4", "2.12.7")
 
 scalaVersion := crossScalaVersions.value.head
 
@@ -41,14 +41,15 @@ scalacOptions ++= Seq(
 resolvers ++= Seq(Resolver.sonatypeRepo("releases"), Resolver.sonatypeRepo("snapshots"))
 
 // ··· Project Dependencies ···
-val sangriaV        = "1.4.+"
-val sangriaCirceV   = "1.2.1"
-val akkaHttpV       = "10.1.+"
-val akkaHttpCircleV = "1.22.+"
-val circeV          = "0.10.+"
-val slf4JV          = "1.7.25"
+val sangriaV        = "2.1.+"
+val sangriaCirceV   = "1.3.+"
+val akkaV           = "2.6.+"
+val akkaHttpV       = "10.2.+"
+val akkaHttpCircleV = "1.35.+"
+val circeV          = "0.13.+"
+val slf4JV          = "1.7.+"
 val logbackV        = "1.2.3"
-val scalatestV      = "3.0.5"
+val scalatestV      = "3.2.+"
 
 libraryDependencies ++= Seq(
   // --- GraphQL --
@@ -56,6 +57,7 @@ libraryDependencies ++= Seq(
   "org.sangria-graphql" %% "sangria-circe"    % sangriaCirceV,
   // --- Akka --
   "com.typesafe.akka"   %% "akka-http"        % akkaHttpV,
+  "com.typesafe.akka"   %% "akka-stream"      % akkaV,
   "de.heikoseeberger"   %% "akka-http-circe"  % akkaHttpCircleV,
   // --- Utils ---
   "io.circe"            %% "circe-generic"    % circeV,

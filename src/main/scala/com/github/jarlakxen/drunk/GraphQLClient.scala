@@ -27,7 +27,6 @@ import backend.{AkkaBackend, AkkaConnectionBackend, AkkaHttpBackend}
 import extensions.{GraphQLExtensions, NoExtensions}
 import io.circe._
 import io.circe.parser._
-import sangria._
 import sangria.ast.Document
 import sangria.introspection._
 import sangria.marshalling.circe._
@@ -112,9 +111,6 @@ class GraphQLClient private[GraphQLClient] (options: ClientOptions, backend: Akk
     ec: ExecutionContext
   ): GraphQLCursor[Res, Vars] = {
     var fullDoc = doc
-    if (options.addTypename) {
-      fullDoc = ast.addTypename(doc)
-    }
 
     val operation: GraphQLOperation[Res, Vars] = GraphQLOperation(doc, variables, operationName)
     val result = execute(operation)

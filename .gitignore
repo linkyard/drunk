@@ -34,3 +34,6 @@ project/project
 #Ensime
 .ensime_cache/
 .ensime
+.bsp
+.metals
+.vscode
