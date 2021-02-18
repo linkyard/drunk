@@ -1,13 +1,11 @@
 package com.github.jarlakxen.drunk.backend
 
 import java.io.UnsupportedEncodingException
-
 import akka.actor.ActorSystem
-import akka.http.scaladsl.coding.{Deflate, Gzip, NoCoding}
+import akka.http.scaladsl.coding.Coders
 import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.model.headers.HttpEncodings
 import akka.util.ByteString
-
 import scala.concurrent.{ExecutionContext, Future}
 
 trait AkkaBackend {
@@ -22,9 +20,9 @@ trait AkkaBackend {
 
   protected def decodeResponse(response: HttpResponse): HttpResponse = {
     val decoder = response.encoding match {
-      case HttpEncodings.gzip     => Gzip
-      case HttpEncodings.deflate  => Deflate
-      case HttpEncodings.identity => NoCoding
+      case HttpEncodings.gzip     => Coders.Gzip
+      case HttpEncodings.deflate  => Coders.Deflate
+      case HttpEncodings.identity => Coders.NoCoding
       case ce =>
         throw new UnsupportedEncodingException(s"Unsupported encoding: $ce")
     }
