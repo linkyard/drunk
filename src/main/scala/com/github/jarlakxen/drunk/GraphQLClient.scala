@@ -110,6 +110,9 @@ class GraphQLClient private[GraphQLClient] (options: ClientOptions, backend: Akk
     ec: ExecutionContext
   ): GraphQLCursor[Res, Vars] = {
     var fullDoc = doc
+    if (options.addTypename) {
+      fullDoc = ast.addTypename(fullDoc)
+    }
 
     val operation: GraphQLOperation[Res, Vars] = GraphQLOperation(doc, variables, operationName)
     val result = execute(operation)

@@ -24,10 +24,11 @@ package com.github.jarlakxen.drunk
  *  									
  *
  */
-case class ClientOptions()
+case class ClientOptions(
+  addTypename: Boolean)
 
 object ClientOptions {
 
-  val Default = ClientOptions()
+  val Default = ClientOptions(false)
 
 }
