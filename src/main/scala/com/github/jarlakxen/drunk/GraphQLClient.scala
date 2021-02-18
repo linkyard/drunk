@@ -29,28 +29,28 @@ import io.circe.parser._
 import sangria.ast.Document
 import sangria.introspection._
 import sangria.marshalling.circe._
-import sangria.parser.{QueryParser, SyntaxError}
+import sangria.parser.QueryParser
 
 import scala.collection.immutable
 
 class GraphQLClient private[GraphQLClient] (options: ClientOptions, backend: AkkaBackend) {
   import GraphQLClient._
 
-  private[drunk] def execute[Res, Vars](doc: Document, variables: Option[Vars], name: Option[String])(
+  private[drunk] def execute[Res, Vars](doc: Document, variables: Option[Vars], name: Option[String], dropNullsFromInput: Boolean)(
     implicit
     variablesEncoder: Encoder[Vars],
     ec: ExecutionContext
   ): Future[(Int, Json)] =
-    execute(GraphQLOperation(doc, variables, name))
+    execute(GraphQLOperation(doc, variables, name), dropNullsFromInput)
 
-  private[drunk] def execute[Res, Vars](op: GraphQLOperation[Res, Vars])(
+  private[drunk] def execute[Res, Vars](op: GraphQLOperation[Res, Vars], dropNullsFromInput: Boolean)(
     implicit
     ec: ExecutionContext
   ): Future[(Int, Json)] = {
 
     val fields =
       List("query" -> op.docToJson) ++
-        op.encodeVariables.map("variables" -> _) ++
+        op.encodeVariables.map(v => if (dropNullsFromInput) v.deepDropNullValues else v).map("variables" -> _) ++
         op.name.map("operationName" -> Json.fromString(_))
 
     val body = Json.obj(fields: _*).noSpaces
@@ -115,7 +115,7 @@ class GraphQLClient private[GraphQLClient] (options: ClientOptions, backend: Akk
     }
 
     val operation: GraphQLOperation[Res, Vars] = GraphQLOperation(doc, variables, operationName)
-    val result = execute(operation)
+    val result = execute(operation, dropNullsFromInput = false)
     val data: Future[GraphQLClient.GraphQLResponse[Res]] = result.flatMap {
       case (status, body) => Future.fromTry(extractErrorOrData(body, status))
     }
@@ -131,19 +131,19 @@ class GraphQLClient private[GraphQLClient] (options: ClientOptions, backend: Akk
   ): Future[GraphQLResponse[Res]] =
     mutate(doc, Some(variables), None)
 
-  def mutate[Res, Vars](doc: Document, variables: Vars, operationName: Option[String])(
+  def mutate[Res, Vars](doc: Document, variables: Vars, operationName: Option[String], dropNullsFromInput: Boolean = false)(
     implicit
     dec: Decoder[Res],
     en: Encoder[Vars],
     ec: ExecutionContext
   ): Future[GraphQLResponse[Res]] = {
 
-    val result = execute(doc, Some(variables), operationName)
+    val result = execute(doc, Some(variables), operationName, dropNullsFromInput)
     result.flatMap { case (status, body) => Future.fromTry(extractErrorOrData(body, status)) }
   }
 
   def schema(implicit ec: ExecutionContext): Future[IntrospectionSchema] =
-    execute[Json, Nothing](introspectionQuery, None, None)(null, ec)
+    execute[Json, Nothing](introspectionQuery, None, None, dropNullsFromInput = false)(null, ec)
       .flatMap {
         case (_, json) => Future.fromTry(IntrospectionParser.parse(json))
       }
