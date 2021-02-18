@@ -27,7 +27,7 @@ class AkkaHttpBackend private[AkkaHttpBackend] (
   uri: Uri,
   headers: immutable.Seq[HttpHeader],
   httpExt: HttpExt
-)(override implicit val as: ActorSystem, override implicit val mat: ActorMaterializer)
+)(override implicit val as: ActorSystem)
     extends AkkaBackend {
 
   def send(body: String): Future[(Int, String)] = {
@@ -67,7 +67,7 @@ object AkkaHttpBackend {
     uri: Uri,
     headers: immutable.Seq[HttpHeader] = Nil,
     httpExt: Option[HttpExt] = None
-  )(implicit as: ActorSystem, mat: ActorMaterializer): AkkaHttpBackend = {
+  )(implicit as: ActorSystem): AkkaHttpBackend = {
 
     val http = httpExt.getOrElse { Http(as) }
     new AkkaHttpBackend(uri, headers, http)

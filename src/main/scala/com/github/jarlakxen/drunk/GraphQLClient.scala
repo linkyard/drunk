@@ -21,7 +21,6 @@ import scala.util._
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http.OutgoingConnection
 import akka.http.scaladsl.model.{HttpHeader, HttpRequest, HttpResponse, Uri}
-import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Flow
 import backend.{AkkaBackend, AkkaConnectionBackend, AkkaHttpBackend}
 import extensions.{GraphQLExtensions, NoExtensions}
@@ -176,7 +175,6 @@ object GraphQLClient {
     headers: immutable.Seq[HttpHeader] = Nil
   ): GraphQLClient = {
     implicit val as: ActorSystem = ActorSystem("GraphQLClient")
-    implicit val mat: ActorMaterializer = ActorMaterializer()
     val backend = AkkaHttpBackend(Uri(uri), headers)
     new GraphQLClient(clientOptions, backend)
   }
@@ -186,7 +184,7 @@ object GraphQLClient {
     flow: Flow[HttpRequest, HttpResponse, Future[OutgoingConnection]],
     clientOptions: ClientOptions,
     headers: immutable.Seq[HttpHeader]
-  )(implicit as: ActorSystem, mat: ActorMaterializer): GraphQLClient =
+  )(implicit as: ActorSystem): GraphQLClient =
     new GraphQLClient(clientOptions, AkkaConnectionBackend(uri, flow, headers))
 
   private[GraphQLClient] def extractErrors(body: Json, statusCode: Int): Option[GraphQLResponseError] = {

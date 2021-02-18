@@ -6,14 +6,12 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.coding.{Deflate, Gzip, NoCoding}
 import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.model.headers.HttpEncodings
-import akka.stream.ActorMaterializer
 import akka.util.ByteString
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait AkkaBackend {
   implicit val as: ActorSystem
-  implicit val mat: ActorMaterializer
 
   def send(body: String): Future[(Int, String)]
 
