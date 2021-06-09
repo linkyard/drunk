@@ -3,7 +3,8 @@ package com.github.jarlakxen.drunk
 import com.github.jarlakxen.drunk.circe._
 import com.github.jarlakxen.drunk.extensions._
 import com.github.jarlakxen.drunk.extensions.metrics._
-import io.circe._, io.circe.parser._, io.circe.generic.semiauto._
+import io.circe._
+import io.circe.generic.semiauto._
 import sangria.macros._
 
 object Episode extends Enumeration {
@@ -34,7 +35,7 @@ case class Droid(
 case class HeroQuery(hero: Character)
 
 class GraphQLClientSpec extends Spec with TestHttpServer {
-  implicit val episodeDecoder = Decoder.enumDecoder(Episode)
+  implicit val episodeDecoder: Decoder[Episode.Value] = Decoder.decodeEnumeration(Episode)
   implicit val humanDecoder: Decoder[Human] = deriveDecoder
   implicit val droidDecoder: Decoder[Droid] = deriveDecoder
 

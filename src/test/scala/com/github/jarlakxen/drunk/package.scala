@@ -2,18 +2,11 @@ package com.github.jarlakxen
 
 import java.net.InetSocketAddress
 import java.nio.channels.ServerSocketChannel
-
-import scala.concurrent._
-import scala.concurrent.duration._
-
+import scala.concurrent.ExecutionContextExecutor
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.Http.ServerBinding
-import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Route
-import akka.stream.ActorMaterializer
 import akka.testkit._
-
 import org.scalatest.BeforeAndAfterAll
 
 package object drunk {
@@ -22,8 +15,7 @@ package object drunk {
     this: Spec =>
 
     implicit val system: ActorSystem = ActorSystem("drunk-test")
-    implicit def executor = system.dispatcher
-    implicit val materializer = ActorMaterializer()
+    implicit def executor: ExecutionContextExecutor = system.dispatcher
 
     private def temporaryServerAddress(interface: String = "127.0.0.1"): InetSocketAddress = {
       val serverSocket = ServerSocketChannel.open()
@@ -42,7 +34,7 @@ package object drunk {
     val (host, port) = temporaryServerHostnameAndPort()
 
     override protected def beforeAll(): Unit =
-      Http().bindAndHandle(serverRoutes, host, port).futureValue
+      Http().newServerAt(host, port).bindFlow(serverRoutes).futureValue
 
     override protected def afterAll(): Unit =
       TestKit.shutdownActorSystem(system)

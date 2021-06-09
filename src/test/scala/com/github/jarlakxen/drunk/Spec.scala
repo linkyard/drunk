@@ -3,11 +3,13 @@ package com.github.jarlakxen.drunk
 import org.scalactic.TypeCheckedTripleEquals
 import org.scalatest._
 import org.scalatest.concurrent.{Futures, ScalaFutures}
+import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.time._
 import org.slf4j.LoggerFactory
+import org.scalatest.matchers.should.Matchers
 
 trait Spec
-    extends FlatSpec
+    extends AnyFlatSpec
     with Matchers
     with OptionValues
     with Inside
@@ -21,6 +23,6 @@ trait Spec
 
   val log = LoggerFactory.getLogger(this.getClass)
 
-  implicit val defaultPatience = PatienceConfig(timeout = Span(5, Seconds), interval = Span(5, Millis))
+  implicit val defaultPatience: PatienceConfig = PatienceConfig(timeout = Span(5, Seconds), interval = Span(5, Millis))
 
 }
