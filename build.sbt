@@ -1,24 +1,27 @@
-// ··· Project Settings ···
-
-// scalafixSettings
-
-// ··· Project Info ···
-
 val projectName = "drunk"
 
 name := projectName
 
-organization := "com.github.jarlakxen"
+organization := "ch.linkyard.fork"
 
-crossScalaVersions := Seq("2.13.4", "2.12.7")
+crossScalaVersions := Seq("2.13.6")
 
 scalaVersion := crossScalaVersions.value.head
 
-organizationName := "Facundo Viale"
-startYear := Some(2018)
+organizationName := "linkyard"
+startYear := Some(2021)
 licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt"))
 
-publishMavenStyle := true
+credentials += Credentials(Path.userHome / ".sbt" / ".linkyard-credentials")
+publishTo := {
+  val nexus = "https://nexus.linkyard.ch/"
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "repository/maven-snapshots/")
+  else
+    Some("releases"  at nexus + "repository/maven2-public/")
+}
+
+Global / onChangedBuildSource := ReloadOnSourceChanges
 
 // ··· Project Options ···
 
